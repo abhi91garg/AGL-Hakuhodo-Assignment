@@ -1,0 +1,12 @@
+services:
+  backend:
+    build: .
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-4000}
+      DATABASE_PATH: /app/data/nhtsa.sqlite
+    ports:
+      - "${PORT:-4000}:${PORT:-4000}"
+    volumes:
+      - ./data:/app/data

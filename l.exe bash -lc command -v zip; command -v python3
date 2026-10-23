@@ -1,0 +1,64 @@
+README.md:1: trailing whitespace.
+[32m+[m[32m# AGL-Hakuhodo Assessment[m[41m[m
+README.md:2: trailing whitespace.
+[32m+[m[41m[m
+README.md:3: trailing whitespace.
+[32m+[m[32mThis repository contains two independent applications for the AGL-Hakuhodo[m[41m[m
+README.md:4: trailing whitespace.
+[32m+[m[32mSenior Full Stack Developer assessment. They have separate dependencies,[m[41m[m
+README.md:5: trailing whitespace.
+[32m+[m[32mconfiguration, tests, and documentation; the frontend does not depend on or[m[41m[m
+README.md:6: trailing whitespace.
+[32m+[m[32mcall the backend.[m[41m[m
+README.md:7: trailing whitespace.
+[32m+[m[41m[m
+README.md:8: trailing whitespace.
+[32m+[m[32m## Frontend[m[41m[m
+README.md:9: trailing whitespace.
+[32m+[m[41m[m
+README.md:10: trailing whitespace.
+[32m+[m[32mThe frontend preserves the supplied car-inventory challenge starter and its[m[41m[m
+README.md:11: trailing whitespace.
+[32m+[m[32mmocked GraphQL API.[m[41m[m
+README.md:12: trailing whitespace.
+[32m+[m[41m[m
+README.md:13: trailing whitespace.
+[32m+[m[32m```powershell[m[41m[m
+README.md:14: trailing whitespace.
+[32m+[m[32mcd frontend[m[41m[m
+README.md:15: trailing whitespace.
+[32m+[m[32mnpm ci[m[41m[m
+README.md:16: trailing whitespace.
+[32m+[m[32mnpm run verify[m[41m[m
+README.md:17: trailing whitespace.
+[32m+[m[32mnpm run dev[m[41m[m
+README.md:18: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:19: trailing whitespace.
+[32m+[m[41m[m
+README.md:20: trailing whitespace.
+[32m+[m[32mSee [frontend/README.md](frontend/README.md) for the challenge requirements and[m[41m[m
+README.md:21: trailing whitespace.
+[32m+[m[32mrun instructions. The required verification command is `npm run verify`.[m[41m[m
+README.md:22: trailing whitespace.
+[32m+[m[41m[m
+README.md:23: trailing whitespace.
+[32m+[m[32m## Backend[m[41m[m
+README.md:24: trailing whitespace.
+[32m+[m[41m[m
+README.md:25: trailing whitespace.
+[32m+[m[32mThe backend ingests NHTSA make and vehicle-type data into a local database and[m[41m[m
+README.md:26: trailing whitespace.
+[32m+[m[32mserves it through GraphQL. Its setup, ingestion, and Docker instructions are in[m[41m[m
+README.md:27: trailing whitespace.
+[32m+[m[32m[backend/README.md](backend/README.md).[m[41m[m
+README.md:28: trailing whitespace.
+[32m+[m[41m[m
+README.md:29: trailing whitespace.
+[32m+[m[32m## Verification[m[41m[m
+README.md:30: trailing whitespace.
+[32m+[m[41m[m
+README.md:31: trailing whitespace.
+[32m+[m[32mInstall and run each application from its own directory. Each application has[m[41m[m
+README.md:32: trailing whitespace.
+[32m+[m[32mits own tests and verification commands; there is no shared runtime or[m[41m[m

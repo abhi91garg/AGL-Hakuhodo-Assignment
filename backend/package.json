@@ -1,0 +1,55 @@
+{
+  "name": "agl-hakuhodo-nhtsa-service",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node dist/main.js",
+    "start:dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests --max-warnings 0",
+    "test": "tsx --test tests/**/*.test.ts",
+    "db:migrate": "node dist/migrate.js",
+    "ingest": "node dist/ingest.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.0.0",
+    "@as-integrations/express5": "^1.1.2",
+    "@nestjs/apollo": "^13.2.0",
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/core": "^11.1.3",
+    "@nestjs/graphql": "^13.2.0",
+    "@nestjs/platform-express": "^11.1.3",
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^16.6.1",
+    "fast-xml-parser": "^5.2.5",
+    "graphql": "^16.11.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.1.3",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.15.30",
+    "@types/supertest": "^6.0.3",
+    "eslint": "^9.29.0",
+    "supertest": "^7.1.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.34.1"
+  },
+  "overrides": {
+    "@nestjs/graphql": {
+      "@graphql-tools/utils": "^12.1.0"
+    }
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true,
+    "esbuild@0.28.2": true
+  }
+}
