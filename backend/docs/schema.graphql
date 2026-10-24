@@ -1,0 +1,22 @@
+type Query {
+  makes: [Make!]!
+  ingestionStatus: IngestionStatus!
+}
+
+type Make {
+  makeId: Int!
+  makeName: String!
+  vehicleTypes: [VehicleType!]!
+}
+
+type VehicleType {
+  typeId: Int!
+  typeName: String!
+}
+
+type IngestionStatus {
+  lastSuccessfulIngestionAt: String
+  makeCount: Int!
+  vehicleTypeCount: Int!
+  runId: String
+}
