@@ -1,3 +1,4 @@
+
 services:
   backend:
     build: .
@@ -9,4 +10,7 @@ services:
     ports:
       - "${PORT:-4000}:${PORT:-4000}"
     volumes:
-      - ./data:/app/data
+      - nhtsa-data:/app/data
+
+volumes:
+  nhtsa-data:
