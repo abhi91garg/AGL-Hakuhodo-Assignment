@@ -26,34 +26,37 @@ export function openSqlite(path: string) {
   return new Database(path);
 }
 
+export function migrateDatabase(database: Database.Database) {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS makes (
+      make_id INTEGER PRIMARY KEY,
+      make_name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS vehicle_types (
+      make_id INTEGER NOT NULL REFERENCES makes(make_id) ON DELETE CASCADE,
+      type_id INTEGER NOT NULL,
+      type_name TEXT NOT NULL,
+      PRIMARY KEY (make_id, type_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS vehicle_types_type_id_idx
+      ON vehicle_types(type_id);
+
+    CREATE TABLE IF NOT EXISTS ingestion_status (
+      singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1),
+      last_successful_ingestion_at TEXT NOT NULL,
+      make_count INTEGER NOT NULL,
+      vehicle_type_count INTEGER NOT NULL,
+      run_id TEXT NOT NULL
+    );
+  `);
+}
+
 export class DatabaseService implements OnModuleDestroy {
   constructor(private readonly database: Database.Database) {
     this.database.pragma("foreign_keys = ON");
     this.database.pragma("journal_mode = WAL");
-    this.database.exec(`
-      CREATE TABLE IF NOT EXISTS makes (
-        make_id INTEGER PRIMARY KEY,
-        make_name TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS vehicle_types (
-        make_id INTEGER NOT NULL REFERENCES makes(make_id) ON DELETE CASCADE,
-        type_id INTEGER NOT NULL,
-        type_name TEXT NOT NULL,
-        PRIMARY KEY (make_id, type_id)
-      );
-
-      CREATE INDEX IF NOT EXISTS vehicle_types_type_id_idx
-        ON vehicle_types(type_id);
-
-      CREATE TABLE IF NOT EXISTS ingestion_status (
-        singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1),
-        last_successful_ingestion_at TEXT NOT NULL,
-        make_count INTEGER NOT NULL,
-        vehicle_type_count INTEGER NOT NULL,
-        run_id TEXT NOT NULL
-      );
-    `);
   }
 
   replaceSnapshot(makes: SnapshotMake[], runId: string): IngestionStatus {
@@ -156,6 +159,7 @@ export class DatabaseService implements OnModuleDestroy {
   }
 
   onModuleDestroy() {
+    console.log(JSON.stringify({ event: "server_shutting_down" }));
     this.close();
   }
 }

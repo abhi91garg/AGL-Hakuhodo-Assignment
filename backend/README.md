@@ -37,7 +37,10 @@ Copy `.env.example` to `.env`. Settings are validated at startup:
 | Variable | Default | Allowed range |
 | --- | ---: | ---: |
 | `PORT` | `4000` | 1-65535 |
+| `LOG_LEVEL` | `log` | `error`, `warn`, `log`, `debug`, `verbose` |
 | `DATABASE_PATH` | `./data/nhtsa.sqlite` | non-empty path |
+| `NHTSA_MAKES_URL` | GetAllMakes XML URL | valid HTTP or HTTPS URL |
+| `NHTSA_TYPES_URL` | GetVehicleTypesForMakeId base URL | valid HTTP or HTTPS URL |
 | `NHTSA_MAX_CONCURRENCY` | `5` | 1-8 |
 | `NHTSA_REQUEST_TIMEOUT_MS` | `10000` | 1000-60000 |
 | `NHTSA_MAX_RETRIES` | `2` | 0-5 retries after the first request |
@@ -45,6 +48,7 @@ Copy `.env.example` to `.env`. Settings are validated at startup:
 | `NHTSA_RETRY_MAX_DELAY_MS` | `5000` | 0-10000 |
 
 Retry delay is capped by the maximum. The base delay cannot exceed the maximum. Do not increase concurrency or retry limits without checking current NHTSA behavior.
+`LOG_LEVEL` controls NestJS framework logs; structured application events remain enabled.
 
 ## Data model
 
@@ -52,7 +56,7 @@ Retry delay is capped by the maximum. The base delay cannot exceed the maximum. 
 - `vehicle_types`: make foreign key, type ID/name, composite primary key `(make_id, type_id)`; indexed by type ID.
 - `ingestion_status`: one metadata row with UTC ISO-8601 success time, counts, and run ID.
 
-SQLite is sufficient for this single-service assessment: it provides durable relational constraints without a separate database server. A single joined query assembles makes and vehicle types, avoiding GraphQL N+1 reads. `DatabaseService` creates missing tables at startup; `npm run db:migrate` explicitly initializes them as part of setup.
+SQLite is sufficient for this single-service assessment: it provides durable relational constraints without a separate database server. A single joined query assembles makes and vehicle types, avoiding GraphQL N+1 reads. Run `npm run db:migrate` before ingestion or starting the service; the service expects the database schema to exist and does not create tables at runtime.
 
 ## GraphQL
 

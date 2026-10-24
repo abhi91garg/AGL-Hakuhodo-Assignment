@@ -6,14 +6,16 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 import Database from "better-sqlite3";
 import { AppModule } from "../src/app.module.js";
-import { DatabaseService } from "../src/storage/database.js";
+import { DatabaseService, migrateDatabase } from "../src/storage/database.js";
 
 describe("GraphQL API", () => {
   let app: INestApplication;
   let database: DatabaseService;
 
   before(async () => {
-    database = new DatabaseService(new Database(":memory:"));
+    const sqlite = new Database(":memory:");
+    migrateDatabase(sqlite);
+    database = new DatabaseService(sqlite);
     database.replaceSnapshot(
       [
         {

@@ -1,5 +1,8 @@
 import "dotenv/config";
 
+const logLevels = ["error", "warn", "log", "debug", "verbose"] as const;
+type ConfiguredLogLevel = (typeof logLevels)[number];
+
 function integerSetting(
   name: string,
   value: string | undefined,
@@ -15,8 +18,25 @@ function integerSetting(
 }
 
 export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
+  const logLevel = environment.LOG_LEVEL ?? "log";
+  if (!logLevels.includes(logLevel as ConfiguredLogLevel)) {
+    throw new Error(`LOG_LEVEL must be one of: ${logLevels.join(", ")}.`);
+  }
+
+  const urlSetting = (name: string, value: string | undefined, fallback: string) => {
+    const url = value ?? fallback;
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
+    } catch {
+      throw new Error(`${name} must be a valid HTTP or HTTPS URL.`);
+    }
+    return url;
+  };
+
   const config = {
     port: integerSetting("PORT", environment.PORT, 4000, 1, 65535),
+    logLevel: logLevel as ConfiguredLogLevel,
     databasePath: environment.DATABASE_PATH ?? "./data/nhtsa.sqlite",
     maxConcurrency: integerSetting(
       "NHTSA_MAX_CONCURRENCY",
@@ -53,8 +73,16 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
       0,
       10000
     ),
-    makesUrl: "https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML",
-    typesUrl: "https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId",
+    makesUrl: urlSetting(
+      "NHTSA_MAKES_URL",
+      environment.NHTSA_MAKES_URL,
+      "https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML"
+    ),
+    typesUrl: urlSetting(
+      "NHTSA_TYPES_URL",
+      environment.NHTSA_TYPES_URL,
+      "https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId"
+    ),
   };
 
   if (config.retryBaseDelayMs > config.retryMaxDelayMs) {
@@ -63,7 +91,6 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
   if (!config.databasePath.trim()) {
     throw new Error("DATABASE_PATH must not be empty.");
   }
-
   return config;
 }
 

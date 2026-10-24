@@ -27,6 +27,23 @@ describe("NHTSA HTTP client", () => {
     assert.deepEqual(delays, [2000]);
   });
 
+  it("retries a 503 then returns XML", async () => {
+    let calls = 0;
+    const xml = await fetchNhtsaXml("https://example.test", config, {
+      fetchImpl: async () => {
+        calls += 1;
+        return calls === 1
+          ? new Response("", { status: 503 })
+          : new Response("<Response />", { status: 200 });
+      },
+      sleep: async () => undefined,
+      log: () => undefined,
+    });
+
+    assert.equal(xml, "<Response />");
+    assert.equal(calls, 2);
+  });
+
   it("does not retry a permanent client error", async () => {
     let calls = 0;
     await assert.rejects(

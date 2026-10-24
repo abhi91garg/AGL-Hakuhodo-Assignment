@@ -5,7 +5,13 @@ import { describe, it } from "node:test";
 import Database from "better-sqlite3";
 import { loadConfig } from "../src/config.js";
 import { runIngestion } from "../src/ingestion/ingest-service.js";
-import { DatabaseService } from "../src/storage/database.js";
+import { DatabaseService, migrateDatabase } from "../src/storage/database.js";
+
+function createDatabaseService() {
+  const sqlite = new Database(":memory:");
+  migrateDatabase(sqlite);
+  return new DatabaseService(sqlite);
+}
 
 const makesXml = readFileSync(
   fileURLToPath(new URL("./fixtures/get-all-makes.sample.xml", import.meta.url)),
@@ -18,7 +24,7 @@ const typesXml = readFileSync(
 
 describe("NHTSA ingestion", () => {
   it("fetches each unique make with bounded concurrency and stores the combined snapshot", async () => {
-    const database = new DatabaseService(new Database(":memory:"));
+    const database = createDatabaseService();
     const config = loadConfig({ NHTSA_MAX_CONCURRENCY: "2" });
     const calls: number[] = [];
     const logs: Array<Record<string, string | number | boolean | null>> = [];
@@ -53,7 +59,7 @@ describe("NHTSA ingestion", () => {
   });
 
   it("preserves the prior snapshot and freshness after a partial request failure", async () => {
-    const database = new DatabaseService(new Database(":memory:"));
+    const database = createDatabaseService();
     const config = loadConfig({ NHTSA_MAX_CONCURRENCY: "2" });
     database.replaceSnapshot(
       [{ makeId: 440, makeName: "Existing Make", vehicleTypes: [] }],
@@ -83,7 +89,7 @@ describe("NHTSA ingestion", () => {
   });
 
   it("preserves existing data if the all-makes response is unexpectedly empty", async () => {
-    const database = new DatabaseService(new Database(":memory:"));
+    const database = createDatabaseService();
     const config = loadConfig({});
     database.replaceSnapshot(
       [{ makeId: 440, makeName: "Existing Make", vehicleTypes: [] }],

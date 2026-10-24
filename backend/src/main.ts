@@ -9,7 +9,20 @@ import { AppModule } from "./app.module.js";
 async function bootstrap() {
   const config = loadConfig();
   const app = await NestFactory.create(AppModule, { logger: false });
-  app.useLogger(new ConsoleLogger({ json: true, colors: false }));
+  const enabledLogLevels = {
+    error: ["error"],
+    warn: ["error", "warn"],
+    log: ["error", "warn", "log"],
+    debug: ["error", "warn", "log", "debug"],
+    verbose: ["error", "warn", "log", "debug", "verbose"],
+  } as const;
+  app.useLogger(
+    new ConsoleLogger({
+      json: true,
+      colors: false,
+      logLevels: [...enabledLogLevels[config.logLevel]],
+    })
+  );
   app.enableShutdownHooks();
   const validatedConfig = app.get<AppConfig>(APP_CONFIG);
   await app.listen(validatedConfig.port);

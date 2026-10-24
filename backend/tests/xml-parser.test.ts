@@ -40,6 +40,10 @@ describe("NHTSA XML parsing", () => {
       { makeId: 440, makeName: "TEST MAKE" },
     ]);
     assert.deepEqual(parseMakesXml(empty), []);
+    assert.deepEqual(
+      parseVehicleTypesXml("<Response><Count>0</Count><Results></Results></Response>"),
+      []
+    );
   });
 
   it("rejects malformed XML, missing fields, and inconsistent counts", () => {
